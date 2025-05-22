@@ -63,7 +63,7 @@ bool similar(const std::string& a, const std::string& b) {
 	return false;
 }
 
-void reSortingByPoint(const int max1, const int max2)
+void reSortingByPoint(const long long int  max1, const long long int  max2)
 {
 	const int sizeOfDay = 7;
 	if (UZ >= 2100000000 || max1 >= 2100000000 || max2 >= 2100000000) {
