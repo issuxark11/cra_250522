@@ -5,8 +5,10 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+//#include "SimilarityChecker.h"
 
 using namespace std;
+class SimilarityChecker;
 
 struct Node {
 	string w;
@@ -25,16 +27,22 @@ struct Node2 {
 class fixKeyword
 {
 public:
-	bool fileInput(const string file_name);
-	string processKeyword(const string keyword, const string day);
-	int getIndexOfWeekWeekend(const int indexOfDay);
-	int getIndexOfDay(const string day);
-	void reSortingByPoint(const long long int  max1, const long long int  max2);
-	bool similar(const std::string& a, const std::string& b);
-	int levenshtein(const std::string& a, const std::string& b);
+	fixKeyword(SimilarityChecker* objSimilarityChecker)
+	{
+		s_objSimilarityChecker = objSimilarityChecker;
+	}
+
+	bool fileInput(const string& file_name);
+	string processKeyword(const string& keyword, const string& day);
+	int getIndexOfWeekWeekend(const int& indexOfDay);
+	int getIndexOfDay(const string& day);
+	void reSortingByPoint(const long long int&  max1, const long long int&  max2);
+	bool isSimilar(const std::string& a, const std::string& b);
 private:
 	vector<Node2> weekWeekendBest[2]; // 林吝, 林富
 	vector<Node2> wholeWeekBest[7]; //岿 ~ 老
 
 	int UZ = 9;
+
+	SimilarityChecker* s_objSimilarityChecker;
 };

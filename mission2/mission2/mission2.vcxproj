@@ -126,12 +126,14 @@
     <ClCompile Include="fix_keyword.cpp" />
     <ClCompile Include="fix_keyword_test.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SimilarityChecker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fix_keyword.h" />
+    <ClInclude Include="SimilarityChecker.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
