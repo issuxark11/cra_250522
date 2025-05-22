@@ -165,10 +165,10 @@ string fixKeyword::processKeyword(const string keyword, const string day) {
 	return keyword;
 }
 
-void fixKeyword::fileInput() {
+bool fixKeyword::fileInput(const string file_name) {
 
 	try {
-		ifstream fin("keyword_weekday_500.txt"); 
+		ifstream fin(file_name);
 
 		if (!fin) 
 			throw std::runtime_error("파일 없음");
@@ -181,8 +181,11 @@ void fixKeyword::fileInput() {
 			string ret = processKeyword(keyword, day);
 			std::cout << ret << "\n";
 		}
+
+		return true;
 	}
 	catch (const std::exception& e) {
 		std::cerr << "예외 발생: " << e.what() << std::endl;
+		return false;
 	}
 }

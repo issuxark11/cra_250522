@@ -25,7 +25,7 @@ struct Node2 {
 class fixKeyword
 {
 public:
-	void fileInput();
+	bool fileInput(const string file_name);
 	string processKeyword(const string keyword, const string day);
 	int getIndexOfWeekWeekend(const int indexOfDay);
 	int getIndexOfDay(const string day);
