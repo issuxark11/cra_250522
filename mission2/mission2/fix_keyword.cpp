@@ -2,12 +2,17 @@
 #include "fix_keyword.h"
 #include "SimilarityChecker.h"
 
+void fixKeyword::setUZ(int uz)
+{
+	UZ = uz;
+}
+
 bool fixKeyword::isSimilar(const std::string& a, const std::string& b) {
 	if (a.empty() && b.empty()) return true;
 	if (a.empty() || b.empty()) return false;
 
 	int dist = s_objSimilarityChecker->RunAlgorithm(a, b);
-	int max_len = std::max(a.length(), b.length());
+	int max_len = static_cast<int>(std::max(a.length(), b.length()));
 	// 유사도 비율 (1.0: 완전히 같음, 0.0: 전혀 다름)
 	double similarity = 1.0 - (double)dist / max_len;
 
@@ -20,18 +25,18 @@ bool fixKeyword::isSimilar(const std::string& a, const std::string& b) {
 void fixKeyword::reSortingByPoint(const long long int & max1, const long long int & max2)
 {
 	const int sizeOfDay = 7;
-	if (UZ >= 2100000000 || max1 >= 2100000000 || max2 >= 2100000000) {
+	if (UZ >= max_keyword_point || max1 >= max_keyword_point || max2 >= max_keyword_point) {
 		UZ = 9;
 		for (int i = 0; i < sizeOfDay; i++) {
 			int num = 1;
-			for (Node2& node : wholeWeekBest[i]) {
+			for (PointNode& node : wholeWeekBest[i]) {
 				node.point = num;
 				num++;
 			}
 		}
 		for (int i = 0; i < 2; i++) {
 			int num = 1;
-			for (Node2& node : weekWeekendBest[i]) {
+			for (PointNode& node : weekWeekendBest[i]) {
 				node.point = num;
 				num++;
 			}
@@ -77,7 +82,7 @@ string fixKeyword::processKeyword(const string& keyword, const string& day) {
 	//관리되는 키워드이면 점수가 증가
 	bool isPerfectHit = false;
 
-	for (Node2& node : wholeWeekBest[indexOfDay]) {
+	for (PointNode& node : wholeWeekBest[indexOfDay]) {
 		if (node.name == keyword) {
 			max1 = node.point + (node.point * 0.1);
 			node.point += (node.point * 0.1);
@@ -86,7 +91,7 @@ string fixKeyword::processKeyword(const string& keyword, const string& day) {
 		}
 	}
 
-	for (Node2& node : weekWeekendBest[indexOfWeekWeekend]) {
+	for (PointNode& node : weekWeekendBest[indexOfWeekWeekend]) {
 		if (node.name == keyword) {
 			max2 = node.point + (node.point * 0.1);
 			node.point += (node.point * 0.1);
@@ -102,13 +107,13 @@ string fixKeyword::processKeyword(const string& keyword, const string& day) {
 	reSortingByPoint(max1, max2);
 
 	//찰떡 HIT
-	for (Node2& node : wholeWeekBest[indexOfDay]) {
+	for (PointNode& node : wholeWeekBest[indexOfDay]) {
 		if (isSimilar(node.name, keyword)) {
 			return node.name;
 		}
 	}
 
-	for (Node2& node : weekWeekendBest[indexOfWeekWeekend]) {
+	for (PointNode& node : weekWeekendBest[indexOfWeekWeekend]) {
 		if (isSimilar(node.name, keyword)) {
 			return node.name;
 		}
@@ -145,7 +150,7 @@ string fixKeyword::processKeyword(const string& keyword, const string& day) {
 }
 
 bool fixKeyword::fileInput(const string& file_name) {
-
+	bool ret = false;
 	try {
 		ifstream fin(file_name);
 
@@ -161,10 +166,12 @@ bool fixKeyword::fileInput(const string& file_name) {
 			std::cout << ret << "\n";
 		}
 
-		return true;
+		ret = true;
 	}
 	catch (const std::exception& e) {
 		std::cerr << "exception happend: " << e.what() << std::endl;
-		return false;
+		ret = false;
 	}
+
+	return ret;
 }

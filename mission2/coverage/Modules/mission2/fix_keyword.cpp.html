@@ -11,35 +11,19 @@
         <pre class="prettyprint lang-cpp linenums">
 ï»¿#pragma once
 #include "fix_keyword.h"
+#include "SimilarityChecker.h"
 
-// ë ë²¤ìíì¸ ê±°ë¦¬ ê³ì° ìê³ ë¦¬ì¦ (ë¬¸ìì´ ì ì¬ë ê²ì¬)
-<span style = "background-color:#dfd">int fixKeyword::levenshtein(const std::string&amp; a, const std::string&amp; b) {
-	const size_t len_a = a.size();
-	const size_t len_b = b.size();</span>
-
-<span style = "background-color:#dfd">	std::vector&lt;std::vector&lt;int&gt;&gt; d(len_a + 1, std::vector&lt;int&gt;(len_b + 1));</span>
-
-<span style = "background-color:#dfd">	for (size_t i = 0; i &lt;= len_a; ++i) d[i][0] = i;
-	for (size_t j = 0; j &lt;= len_b; ++j) d[0][j] = j;</span>
-
-<span style = "background-color:#dfd">	for (size_t i = 1; i &lt;= len_a; ++i) {
-		for (size_t j = 1; j &lt;= len_b; ++j) {
-			if (a[i - 1] == b[j - 1])
-				d[i][j] = d[i - 1][j - 1];</span>
-			else
-<span style = "background-color:#dfd">				d[i][j] = 1 + std::min({ d[i - 1][j], d[i][j - 1], d[i - 1][j - 1] });
-		}
-	}
-	return d[len_a][len_b];
+void fixKeyword::setUZ(int uz)
+<span style = "background-color:#dfd">{
+	UZ = uz;
 }</span>
 
-// ì ì íì°
-<span style = "background-color:#dfd">bool fixKeyword::similar(const std::string&amp; a, const std::string&amp; b) {
+<span style = "background-color:#dfd">bool fixKeyword::isSimilar(const std::string&amp; a, const std::string&amp; b) {
 	if (a.empty() &amp;&amp; b.empty()) return true;
 	if (a.empty() || b.empty()) return false;</span>
 
-<span style = "background-color:#dfd">	int dist = levenshtein(a, b);
-	int max_len = std::max(a.length(), b.length());</span>
+<span style = "background-color:#dfd">	int dist = s_objSimilarityChecker-&gt;RunAlgorithm(a, b);
+	int max_len = static_cast&lt;int&gt;(std::max(a.length(), b.length()));</span>
 	// ì ì¬ë ë¹ì¨ (1.0: ìì í ê°ì, 0.0: ì í ë¤ë¦)
 <span style = "background-color:#dfd">	double similarity = 1.0 - (double)dist / max_len;</span>
 
@@ -49,21 +33,21 @@
 	return false;
 }</span>
 
-void fixKeyword::reSortingByPoint(const long long int  max1, const long long int  max2)
+void fixKeyword::reSortingByPoint(const long long int &amp; max1, const long long int &amp; max2)
 <span style = "background-color:#dfd">{
 	const int sizeOfDay = 7;
-	if (UZ &gt;= 2100000000 || max1 &gt;= 2100000000 || max2 &gt;= 2100000000) {</span>
-<span style = "background-color:#fdd">		UZ = 9;
+	if (UZ &gt;= max_keyword_point || max1 &gt;= max_keyword_point || max2 &gt;= max_keyword_point) {
+		UZ = 9;
 		for (int i = 0; i &lt; sizeOfDay; i++) {
 			int num = 1;
-			for (Node2&amp; node : wholeWeekBest[i]) {
+			for (PointNode&amp; node : wholeWeekBest[i]) {
 				node.point = num;
 				num++;
 			}
 		}
 		for (int i = 0; i &lt; 2; i++) {
 			int num = 1;
-			for (Node2&amp; node : weekWeekendBest[i]) {
+			for (PointNode&amp; node : weekWeekendBest[i]) {
 				node.point = num;
 				num++;
 			}
@@ -71,7 +55,7 @@ void fixKeyword::reSortingByPoint(const long long int  max1, const long long int
 	}
 <span style = "background-color:#dfd">}</span>
 
-int fixKeyword::getIndexOfDay(const string day)
+int fixKeyword::getIndexOfDay(const string&amp; day)
 <span style = "background-color:#dfd">{
 	int index = 0;
 	if (day == "monday") index = 0;
@@ -85,7 +69,7 @@ int fixKeyword::getIndexOfDay(const string day)
 <span style = "background-color:#dfd">	return index;
 }</span>
 
-int fixKeyword::getIndexOfWeekWeekend(const int indexOfDay)
+int fixKeyword::getIndexOfWeekWeekend(const int&amp; indexOfDay)
 <span style = "background-color:#dfd">{</span>
 	//íì¼ / ì£¼ë§
 <span style = "background-color:#dfd">	int indexOfWeekWeekend = 0;
@@ -95,7 +79,7 @@ int fixKeyword::getIndexOfWeekWeekend(const int indexOfDay)
 <span style = "background-color:#dfd">	return indexOfWeekWeekend;
 }</span>
 
-<span style = "background-color:#dfd">string fixKeyword::processKeyword(const string keyword, const string day) {</span>
+<span style = "background-color:#dfd">string fixKeyword::processKeyword(const string&amp; keyword, const string&amp; day) {</span>
 	
 <span style = "background-color:#dfd">	int indexOfDay = getIndexOfDay(day);
 	int indexOfWeekWeekend = getIndexOfWeekWeekend(indexOfDay);</span>
@@ -109,7 +93,7 @@ int fixKeyword::getIndexOfWeekWeekend(const int indexOfDay)
 	//ê´ë¦¬ëë í¤ìëì´ë©´ ì ìê° ì¦ê°
 <span style = "background-color:#dfd">	bool isPerfectHit = false;</span>
 
-<span style = "background-color:#dfd">	for (Node2&amp; node : wholeWeekBest[indexOfDay]) {
+<span style = "background-color:#dfd">	for (PointNode&amp; node : wholeWeekBest[indexOfDay]) {
 		if (node.name == keyword) {
 			max1 = node.point + (node.point * 0.1);
 			node.point += (node.point * 0.1);
@@ -118,7 +102,7 @@ int fixKeyword::getIndexOfWeekWeekend(const int indexOfDay)
 		}
 <span style = "background-color:#dfd">	}</span>
 
-<span style = "background-color:#dfd">	for (Node2&amp; node : weekWeekendBest[indexOfWeekWeekend]) {
+<span style = "background-color:#dfd">	for (PointNode&amp; node : weekWeekendBest[indexOfWeekWeekend]) {
 		if (node.name == keyword) {
 			max2 = node.point + (node.point * 0.1);
 			node.point += (node.point * 0.1);
@@ -134,14 +118,14 @@ int fixKeyword::getIndexOfWeekWeekend(const int indexOfDay)
 <span style = "background-color:#dfd">	reSortingByPoint(max1, max2);</span>
 
 	//ì°°ë¡ HIT
-<span style = "background-color:#dfd">	for (Node2&amp; node : wholeWeekBest[indexOfDay]) {
-		if (similar(node.name, keyword)) {</span>
-<span style = "background-color:#fdd">			return node.name;</span>
+<span style = "background-color:#dfd">	for (PointNode&amp; node : wholeWeekBest[indexOfDay]) {
+		if (isSimilar(node.name, keyword)) {
+			return node.name;</span>
 		}
 <span style = "background-color:#dfd">	}</span>
 
-<span style = "background-color:#dfd">	for (Node2&amp; node : weekWeekendBest[indexOfWeekWeekend]) {
-		if (similar(node.name, keyword)) {
+<span style = "background-color:#dfd">	for (PointNode&amp; node : weekWeekendBest[indexOfWeekWeekend]) {
+		if (isSimilar(node.name, keyword)) {
 			return node.name;</span>
 		}
 <span style = "background-color:#dfd">	}</span>
@@ -176,8 +160,8 @@ int fixKeyword::getIndexOfWeekWeekend(const int indexOfDay)
 <span style = "background-color:#dfd">	return keyword;
 }</span>
 
-<span style = "background-color:#dfd">bool fixKeyword::fileInput(const string file_name) {</span>
-
+<span style = "background-color:#dfd">bool fixKeyword::fileInput(const string&amp; file_name) {
+	bool ret = false;</span>
 	try {
 <span style = "background-color:#dfd">		ifstream fin(file_name);</span>
 
@@ -193,12 +177,14 @@ int fixKeyword::getIndexOfWeekWeekend(const int indexOfDay)
 			std::cout &lt;&lt; ret &lt;&lt; "\n";
 		}</span>
 
-<span style = "background-color:#dfd">		return true;</span>
+<span style = "background-color:#dfd">		ret = true;
 	}
-<span style = "background-color:#dfd">	catch (const std::exception&amp; e) {
+	catch (const std::exception&amp; e) {
 		std::cerr &lt;&lt; "exception happend: " &lt;&lt; e.what() &lt;&lt; std::endl;
-		return false;</span>
-<span style = "background-color:#fdd">	}
+		ret = false;
+	}</span>
+
+<span style = "background-color:#dfd">	return ret;
 }</span></pre>
         <hr />
         <table width="100%">

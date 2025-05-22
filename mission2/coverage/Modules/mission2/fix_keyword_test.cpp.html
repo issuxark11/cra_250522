@@ -9,28 +9,83 @@
     <body onload="prettyPrint()">
         <h4></h4>
         <pre class="prettyprint lang-cpp linenums">
+//#pragma once
 #include "gmock/gmock.h"
+#include "SimilarityChecker.h"
 #include "fix_keyword.h"
 
 <span style = "background-color:#dfd">TEST(Group, TC1_filenput_Success)
 {
-	fixKeyword objFixKeyword;
+	LevenshteinChecker objLevenshteinChecker;
+	fixKeyword objFixKeyword(&amp;objLevenshteinChecker);
 	bool ret = objFixKeyword.fileInput("keyword_weekday_500.txt");
 	EXPECT_EQ(ret, true);
 }</span>
 
-<span style = "background-color:#dfd">TEST(Group, TC1_fileinput_Fail)
+<span style = "background-color:#dfd">TEST(Group, TC2_fileinput_Fail)
 {
-	fixKeyword objFixKeyword;
+	LevenshteinChecker objLevenshteinChecker;
+	fixKeyword objFixKeyword(&amp;objLevenshteinChecker);
 	bool ret = objFixKeyword.fileInput("no_file.txt");
 	EXPECT_EQ(ret, false);
 }</span>
 
-<span style = "background-color:#dfd">TEST(Group, TC1_process)
+<span style = "background-color:#dfd">TEST(Group, TC3_process)
 {
-	fixKeyword objFixKeyword;
+	LevenshteinChecker objLevenshteinChecker;
+	fixKeyword objFixKeyword(&amp;objLevenshteinChecker);
 	bool ret = objFixKeyword.fileInput("keyword_weekday_500.txt");
 	EXPECT_EQ(ret, true);
+}</span>
+
+<span style = "background-color:#dfd">TEST(Group, TC4_max_point)
+{
+	LevenshteinChecker objLevenshteinChecker;
+	fixKeyword objFixKeyword(&amp;objLevenshteinChecker);
+	objFixKeyword.setUZ(2100000000);
+	bool ret = objFixKeyword.fileInput("keyword_weekday_500.txt");
+	EXPECT_EQ(ret, true);
+}</span>
+
+<span style = "background-color:#dfd">TEST(Group, TC5_perfect_hit)
+{
+	LevenshteinChecker objLevenshteinChecker;
+	fixKeyword objFixKeyword(&amp;objLevenshteinChecker);
+	objFixKeyword.processKeyword("apple", "monday");
+	objFixKeyword.processKeyword("apple", "monday");
+	objFixKeyword.processKeyword("apple", "monday");
+	objFixKeyword.processKeyword("apple", "monday");
+	objFixKeyword.processKeyword("apple", "monday");
+	objFixKeyword.processKeyword("apple", "monday");</span>
+	
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">TEST(Group, TC6_similar_hit)
+{
+	LevenshteinChecker objLevenshteinChecker;
+	fixKeyword objFixKeyword(&amp;objLevenshteinChecker);
+	objFixKeyword.processKeyword("aaaaaaaaaaaaa", "monday");
+	objFixKeyword.processKeyword("aaaaaaaaaaaaab", "monday");
+}</span>
+
+<span style = "background-color:#dfd">TEST(Group, TC7_resorting_week_hit)
+{
+	LevenshteinChecker objLevenshteinChecker;
+	fixKeyword objFixKeyword(&amp;objLevenshteinChecker);
+	objFixKeyword.processKeyword("aaaaaaaaaaaaa", "monday");
+	objFixKeyword.processKeyword("aaaaaaaaaaaaab", "monday");
+	objFixKeyword.setUZ(2100000000);
+	objFixKeyword.processKeyword("aaaaaaaaaaaaac", "monday");
+}</span>
+
+<span style = "background-color:#dfd">TEST(Group, TC8_resorting_weekend_hit)
+{
+	LevenshteinChecker objLevenshteinChecker;
+	fixKeyword objFixKeyword(&amp;objLevenshteinChecker);
+	objFixKeyword.processKeyword("aaaaaaaaaaaaa", "saturday");
+	objFixKeyword.processKeyword("aaaaaaaaaaaaab", "saturday");
+	objFixKeyword.setUZ(2100000000);
+	objFixKeyword.processKeyword("aaaaaaaaaaaaac", "saturday");
 }</span></pre>
         <hr />
         <table width="100%">

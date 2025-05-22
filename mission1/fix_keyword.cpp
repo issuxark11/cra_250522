@@ -7,22 +7,17 @@
 
 using namespace std;
 
-struct Node {
-	string w;
-	string wk;
-};
-
-struct Node2 {
+struct PointNode {
 	string name;
 	int point;
 
-	bool operator<(const Node2& other) const {
+	bool operator<(const PointNode& other) const {
 		return point < other.point;
 	}
 };
 
-vector<Node2> weekWeekendBest[2]; // 주중, 주말
-vector<Node2> wholeWeekBest[7]; //월 ~ 일
+vector<PointNode> weekWeekendBest[2]; // 주중, 주말
+vector<PointNode> wholeWeekBest[7]; //월 ~ 일
 
 int UZ = 9;
 
@@ -53,7 +48,7 @@ bool similar(const std::string& a, const std::string& b) {
 	if (a.empty() || b.empty()) return false;
 
 	int dist = levenshtein(a, b);
-	int max_len = std::max(a.length(), b.length());
+	int max_len = static_cast<int>(std::max(a.length(), b.length()));
 	// 유사도 비율 (1.0: 완전히 같음, 0.0: 전혀 다름)
 	double similarity = 1.0 - (double)dist / max_len;
 
@@ -70,14 +65,14 @@ void reSortingByPoint(const long long int  max1, const long long int  max2)
 		UZ = 9;
 		for (int i = 0; i < sizeOfDay; i++) {
 			int num = 1;
-			for (Node2& node : wholeWeekBest[i]) {
+			for (PointNode& node : wholeWeekBest[i]) {
 				node.point = num;
 				num++;
 			}
 		}
 		for (int i = 0; i < 2; i++) {
 			int num = 1;
-			for (Node2& node : weekWeekendBest[i]) {
+			for (PointNode& node : weekWeekendBest[i]) {
 				node.point = num;
 				num++;
 			}
@@ -123,7 +118,7 @@ string processKeyword(const string keyword, const string day) {
 	//관리되는 키워드이면 점수가 증가
 	bool isPerfectHit = false;
 
-	for (Node2& node : wholeWeekBest[indexOfDay]) {
+	for (PointNode& node : wholeWeekBest[indexOfDay]) {
 		if (node.name == keyword) {
 			max1 = node.point + (node.point * 0.1);
 			node.point += (node.point * 0.1);
@@ -132,7 +127,7 @@ string processKeyword(const string keyword, const string day) {
 		}
 	}
 
-	for (Node2& node : weekWeekendBest[indexOfWeekWeekend]) {
+	for (PointNode& node : weekWeekendBest[indexOfWeekWeekend]) {
 		if (node.name == keyword) {
 			max2 = node.point + (node.point * 0.1);
 			node.point += (node.point * 0.1);
@@ -148,13 +143,13 @@ string processKeyword(const string keyword, const string day) {
 	reSortingByPoint(max1, max2);
 
 	//찰떡 HIT
-	for (Node2& node : wholeWeekBest[indexOfDay]) {
+	for (PointNode& node : wholeWeekBest[indexOfDay]) {
 		if (similar(node.name, keyword)) {
 			return node.name;
 		}
 	}
 
-	for (Node2& node : weekWeekendBest[indexOfWeekWeekend]) {
+	for (PointNode& node : weekWeekendBest[indexOfWeekWeekend]) {
 		if (similar(node.name, keyword)) {
 			return node.name;
 		}
