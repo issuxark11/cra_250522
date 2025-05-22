@@ -1,0 +1,217 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>fix_keyword.cpp</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+ï»¿#pragma once
+#include "fix_keyword.h"
+
+// ë ë²¤ìíì¸ ê±°ë¦¬ ê³ì° ìê³ ë¦¬ì¦ (ë¬¸ìì´ ì ì¬ë ê²ì¬)
+<span style = "background-color:#dfd">int fixKeyword::levenshtein(const std::string&amp; a, const std::string&amp; b) {
+	const size_t len_a = a.size();
+	const size_t len_b = b.size();</span>
+
+<span style = "background-color:#dfd">	std::vector&lt;std::vector&lt;int&gt;&gt; d(len_a + 1, std::vector&lt;int&gt;(len_b + 1));</span>
+
+<span style = "background-color:#dfd">	for (size_t i = 0; i &lt;= len_a; ++i) d[i][0] = i;
+	for (size_t j = 0; j &lt;= len_b; ++j) d[0][j] = j;</span>
+
+<span style = "background-color:#dfd">	for (size_t i = 1; i &lt;= len_a; ++i) {
+		for (size_t j = 1; j &lt;= len_b; ++j) {
+			if (a[i - 1] == b[j - 1])
+				d[i][j] = d[i - 1][j - 1];</span>
+			else
+<span style = "background-color:#dfd">				d[i][j] = 1 + std::min({ d[i - 1][j], d[i][j - 1], d[i - 1][j - 1] });
+		}
+	}
+	return d[len_a][len_b];
+}</span>
+
+// ì ì íì°
+<span style = "background-color:#dfd">bool fixKeyword::similar(const std::string&amp; a, const std::string&amp; b) {
+	if (a.empty() &amp;&amp; b.empty()) return true;
+	if (a.empty() || b.empty()) return false;</span>
+
+<span style = "background-color:#dfd">	int dist = levenshtein(a, b);
+	int max_len = std::max(a.length(), b.length());</span>
+	// ì ì¬ë ë¹ì¨ (1.0: ìì í ê°ì, 0.0: ì í ë¤ë¦)
+<span style = "background-color:#dfd">	double similarity = 1.0 - (double)dist / max_len;</span>
+
+<span style = "background-color:#dfd">	int score = 1 + static_cast&lt;int&gt;(similarity * 99);</span>
+
+<span style = "background-color:#dfd">	if (score &gt;= 80) return true;
+	return false;
+}</span>
+
+void fixKeyword::reSortingByPoint(const long long int  max1, const long long int  max2)
+<span style = "background-color:#dfd">{
+	const int sizeOfDay = 7;
+	if (UZ &gt;= 2100000000 || max1 &gt;= 2100000000 || max2 &gt;= 2100000000) {</span>
+<span style = "background-color:#fdd">		UZ = 9;
+		for (int i = 0; i &lt; sizeOfDay; i++) {
+			int num = 1;
+			for (Node2&amp; node : wholeWeekBest[i]) {
+				node.point = num;
+				num++;
+			}
+		}
+		for (int i = 0; i &lt; 2; i++) {
+			int num = 1;
+			for (Node2&amp; node : weekWeekendBest[i]) {
+				node.point = num;
+				num++;
+			}
+		}</span>
+	}
+<span style = "background-color:#dfd">}</span>
+
+int fixKeyword::getIndexOfDay(const string day)
+<span style = "background-color:#dfd">{
+	int index = 0;
+	if (day == "monday") index = 0;
+	if (day == "tuesday") index = 1;
+	if (day == "wednesday") index = 2;
+	if (day == "thursday") index = 3;
+	if (day == "friday") index = 4;
+	if (day == "saturday") index = 5;
+	if (day == "sunday") index = 6;</span>
+
+<span style = "background-color:#dfd">	return index;
+}</span>
+
+int fixKeyword::getIndexOfWeekWeekend(const int indexOfDay)
+<span style = "background-color:#dfd">{</span>
+	//íì¼ / ì£¼ë§
+<span style = "background-color:#dfd">	int indexOfWeekWeekend = 0;
+	if (indexOfDay &gt;= 0 &amp;&amp; indexOfDay &lt;= 4) indexOfWeekWeekend = 0;
+	else indexOfWeekWeekend = 1;</span>
+
+<span style = "background-color:#dfd">	return indexOfWeekWeekend;
+}</span>
+
+<span style = "background-color:#dfd">string fixKeyword::processKeyword(const string keyword, const string day) {</span>
+	
+<span style = "background-color:#dfd">	int indexOfDay = getIndexOfDay(day);
+	int indexOfWeekWeekend = getIndexOfWeekWeekend(indexOfDay);</span>
+
+<span style = "background-color:#dfd">	int point = ++UZ;</span>
+
+<span style = "background-color:#dfd">	long long int max1 = 0;
+	long long int max2 = 0;</span>
+
+	//ê´ë¦¬ ëª©ë¡ì ì¡´ì¬íëì§ íì¸
+	//ê´ë¦¬ëë í¤ìëì´ë©´ ì ìê° ì¦ê°
+<span style = "background-color:#dfd">	bool isPerfectHit = false;</span>
+
+<span style = "background-color:#dfd">	for (Node2&amp; node : wholeWeekBest[indexOfDay]) {
+		if (node.name == keyword) {
+			max1 = node.point + (node.point * 0.1);
+			node.point += (node.point * 0.1);
+			isPerfectHit = true;
+			break;</span>
+		}
+<span style = "background-color:#dfd">	}</span>
+
+<span style = "background-color:#dfd">	for (Node2&amp; node : weekWeekendBest[indexOfWeekWeekend]) {
+		if (node.name == keyword) {
+			max2 = node.point + (node.point * 0.1);
+			node.point += (node.point * 0.1);
+			break;</span>
+		}
+<span style = "background-color:#dfd">	}</span>
+
+<span style = "background-color:#dfd">	if (isPerfectHit == true) {
+		return keyword;</span>
+	}
+
+	//ì¬ì ë ¬ ìì
+<span style = "background-color:#dfd">	reSortingByPoint(max1, max2);</span>
+
+	//ì°°ë¡ HIT
+<span style = "background-color:#dfd">	for (Node2&amp; node : wholeWeekBest[indexOfDay]) {
+		if (similar(node.name, keyword)) {</span>
+<span style = "background-color:#fdd">			return node.name;</span>
+		}
+<span style = "background-color:#dfd">	}</span>
+
+<span style = "background-color:#dfd">	for (Node2&amp; node : weekWeekendBest[indexOfWeekWeekend]) {
+		if (similar(node.name, keyword)) {
+			return node.name;</span>
+		}
+<span style = "background-color:#dfd">	}</span>
+
+	//ìë²½ HIT / ì°°ë¡ HIT ëë¤ ìëê²½ì°
+<span style = "background-color:#dfd">	if (wholeWeekBest[indexOfDay].size() &lt; 10) {
+		wholeWeekBest[indexOfDay].push_back({ keyword, point });
+		std::sort(wholeWeekBest[indexOfDay].begin(), wholeWeekBest[indexOfDay].end());</span>
+	}
+
+<span style = "background-color:#dfd">	if (weekWeekendBest[indexOfWeekWeekend].size() &lt; 10) {
+		weekWeekendBest[indexOfWeekWeekend].push_back({ keyword, point });
+		std::sort(weekWeekendBest[indexOfWeekWeekend].begin(), weekWeekendBest[indexOfWeekWeekend].end());</span>
+	}
+
+<span style = "background-color:#dfd">	if (wholeWeekBest[indexOfDay].size() == 10) {
+		if (wholeWeekBest[indexOfDay].back().point &lt; point) {
+			wholeWeekBest[indexOfDay].pop_back();
+			wholeWeekBest[indexOfDay].push_back({ keyword, point });
+			std::sort(wholeWeekBest[indexOfDay].begin(), wholeWeekBest[indexOfDay].end());</span>
+		}
+	}
+
+<span style = "background-color:#dfd">	if (weekWeekendBest[indexOfWeekWeekend].size() == 10) {
+		if (weekWeekendBest[indexOfWeekWeekend].back().point &lt; point) {
+			weekWeekendBest[indexOfWeekWeekend].pop_back();
+			weekWeekendBest[indexOfWeekWeekend].push_back({ keyword, point });
+			std::sort(weekWeekendBest[indexOfWeekWeekend].begin(), weekWeekendBest[indexOfWeekWeekend].end());</span>
+		}
+	}
+
+<span style = "background-color:#dfd">	return keyword;
+}</span>
+
+<span style = "background-color:#dfd">bool fixKeyword::fileInput(const string file_name) {</span>
+
+	try {
+<span style = "background-color:#dfd">		ifstream fin(file_name);</span>
+
+<span style = "background-color:#dfd">		if (!fin) 
+			throw std::runtime_error("no file error");</span>
+
+		//500ê° ë°ì´í° ìë ¥
+<span style = "background-color:#dfd">		int input_size = 500;
+		for (int index = 0; index &lt; input_size; index++) {
+			string keyword, day;
+			fin &gt;&gt; keyword &gt;&gt; day;
+			string ret = processKeyword(keyword, day);
+			std::cout &lt;&lt; ret &lt;&lt; "\n";
+		}</span>
+
+<span style = "background-color:#dfd">		return true;</span>
+	}
+<span style = "background-color:#dfd">	catch (const std::exception&amp; e) {
+		std::cerr &lt;&lt; "exception happend: " &lt;&lt; e.what() &lt;&lt; std::endl;
+		return false;</span>
+<span style = "background-color:#fdd">	}
+}</span></pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>

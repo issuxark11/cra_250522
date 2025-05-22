@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "fix_keyword.h"
 
 // 레벤슈타인 거리 계산 알고리즘 (문자열 유사도 검사)
@@ -171,7 +171,7 @@ bool fixKeyword::fileInput(const string file_name) {
 		ifstream fin(file_name);
 
 		if (!fin) 
-			throw std::runtime_error("파일 없음");
+			throw std::runtime_error("no file error");
 
 		//500개 데이터 입력
 		int input_size = 500;
@@ -185,7 +185,7 @@ bool fixKeyword::fileInput(const string file_name) {
 		return true;
 	}
 	catch (const std::exception& e) {
-		std::cerr << "예외 발생: " << e.what() << std::endl;
+		std::cerr << "exception happend: " << e.what() << std::endl;
 		return false;
 	}
 }
