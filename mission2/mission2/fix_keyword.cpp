@@ -1,33 +1,8 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <map>
-#include <algorithm>
-
-using namespace std;
-
-struct Node {
-	string w;
-	string wk;
-};
-
-struct Node2 {
-	string name;
-	int point;
-
-	bool operator<(const Node2& other) const {
-		return point < other.point;
-	}
-};
-
-vector<Node2> weekWeekendBest[2]; // 주중, 주말
-vector<Node2> wholeWeekBest[7]; //월 ~ 일
-
-int UZ = 9;
+#pragma once
+#include "fix_keyword.h"
 
 // 레벤슈타인 거리 계산 알고리즘 (문자열 유사도 검사)
-int levenshtein(const std::string& a, const std::string& b) {
+int fixKeyword::levenshtein(const std::string& a, const std::string& b) {
 	const size_t len_a = a.size();
 	const size_t len_b = b.size();
 
@@ -48,7 +23,7 @@ int levenshtein(const std::string& a, const std::string& b) {
 }
 
 // 점수 환산
-bool similar(const std::string& a, const std::string& b) {
+bool fixKeyword::similar(const std::string& a, const std::string& b) {
 	if (a.empty() && b.empty()) return true;
 	if (a.empty() || b.empty()) return false;
 
@@ -63,7 +38,7 @@ bool similar(const std::string& a, const std::string& b) {
 	return false;
 }
 
-void reSortingByPoint(const int max1, const int max2)
+void fixKeyword::reSortingByPoint(const long long int  max1, const long long int  max2)
 {
 	const int sizeOfDay = 7;
 	if (UZ >= 2100000000 || max1 >= 2100000000 || max2 >= 2100000000) {
@@ -85,7 +60,7 @@ void reSortingByPoint(const int max1, const int max2)
 	}
 }
 
-int getIndexOfDay(const string day)
+int fixKeyword::getIndexOfDay(const string day)
 {
 	int index = 0;
 	if (day == "monday") index = 0;
@@ -99,7 +74,7 @@ int getIndexOfDay(const string day)
 	return index;
 }
 
-int getIndexOfWeekWeekend(const int indexOfDay)
+int fixKeyword::getIndexOfWeekWeekend(const int indexOfDay)
 {
 	//평일 / 주말
 	int indexOfWeekWeekend = 0;
@@ -109,7 +84,7 @@ int getIndexOfWeekWeekend(const int indexOfDay)
 	return indexOfWeekWeekend;
 }
 
-string processKeyword(const string keyword, const string day) {
+string fixKeyword::processKeyword(const string keyword, const string day) {
 	
 	int indexOfDay = getIndexOfDay(day);
 	int indexOfWeekWeekend = getIndexOfWeekWeekend(indexOfDay);
@@ -190,7 +165,7 @@ string processKeyword(const string keyword, const string day) {
 	return keyword;
 }
 
-void fileInput() {
+void fixKeyword::fileInput() {
 
 	try {
 		ifstream fin("keyword_weekday_500.txt"); 
@@ -211,9 +186,3 @@ void fileInput() {
 		std::cerr << "예외 발생: " << e.what() << std::endl;
 	}
 }
-
-#ifndef _DEBUG
-int main() {
-	fileInput();
-}
-#endif
